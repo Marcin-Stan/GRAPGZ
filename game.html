@@ -6,10 +6,14 @@
         canvas {
             border:1px solid #d3d3d3;
             background-color: #f1f1f1;
+            align-self: center;
+        }
+        body{
+            text-align:center;
         }
     </style>
 </head>
-<body onload="startGame()">
+
 <script>
 
     window.addEventListener('keydown', function(event) {
@@ -36,28 +40,37 @@
         }
     }, false);
 
-    var myGamePiece;
-    var myObstacle;
-    var ball;
-
+    let myPlatform;
+    let myBall;
+    let interval;
+    let isPaused=false;
+    let isEnd= false;
     function startGame() {
-        myGamePiece = new component(30, 30, "red", 10, 120);
-        myObstacle  = new component(10, 200, "green", 300, 120);
-        ball = new ball(10,"blue",100,100);
-        myGameArea.start();
-    }
+        if(isPaused===false||isEnd===true){
+            isEnd = false;
+            isPaused=false;
+            clearInterval(interval);
+            myPlatform = new component(150, 20, "blue", 200, 360);
+            myBall = new ball(10,"green",100,100);
+            myGameArea.start();
+        }else {
+            isPaused=false;
+        }
 
-    var myGameArea = {
+    }
+    const myGameArea = {
         canvas : document.createElement("canvas"),
         start : function() {
-            this.canvas.width = 480;
-            this.canvas.height = 270;
+            this.canvas.width = 600;
+            this.canvas.height = 400;
+            this.canvas.style= "text-align:center";
             this.context = this.canvas.getContext("2d");
             document.body.insertBefore(this.canvas, document.body.childNodes[0]);
-            this.interval = setInterval(updateGameArea, 20);
+            interval = setInterval(updateGameArea, 20);
         },
         clear : function() {
             this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+
         }
     }
 
@@ -79,46 +92,90 @@
         }
     }
 
-    function ball(radious, color, x, y) {
-        this.radious=radious;
+    function ball(r, color, x, y) {
+        this.radious=r;
         this.speedX = 5;
         this.speedY = 5;
         this.x = x;
         this.y = y;
         this.update = function() {
-            ctx = myGameArea.context;
+            const ctx = myGameArea.context;
             ctx.fillStyle = color;
             ctx.beginPath();
             ctx.arc(this.x,this.y,this.radious,0,2*Math.PI);
             ctx.fill();
         }
+        this.newPos = function() {
+            this.x += this.speedX;
+            this.y += this.speedY;
+        }
+        this.collisionPlatform= function(x, y, width){
+            if((this.y===y-this.radious)&&((this.x<x+width)&&(this.x>x))){
+                this.speedY=(-1)*this.speedY;
+            }
+        }
+        this.collisionBall = function() {
+            if(this.y===20){
+               this.speedY=(-1)*this.speedY;
+            }
+            if((this.x===600)||(this.x===10)){
+                this.speedX=(-1)*this.speedX;
+            }
+        }
+        this.collisionDown=function(){
+            if(this.y>400){
+                ctx.font = "40px Arial";
+                ctx.fillStyle="red";
+                ctx.fillText("Koniec gry", 250, 200);
+                isEnd = true;
+                clearInterval(interval);
+            }
+        }
+
     }
 
     function updateGameArea() {
-        myGameArea.clear();
-        ball.update();
-        myObstacle.update();
-        myGamePiece.newPos();
-        myGamePiece.update();
+        if(isPaused===false){
+            myGameArea.clear();
+            myBall.collisionBall();
+            myBall.collisionPlatform(myPlatform.x,myPlatform.y,myPlatform.width);
+            myBall.newPos();
+            myBall.update();
+            myPlatform.newPos();
+            myPlatform.update();
+            myBall.collisionDown();
+        }else {
+            ctx.font = "40px Arial";
+            ctx.fillStyle="red";
+            ctx.fillText("Stop", 250, 200);
+        }
+
     }
 
     function moveleft() {
-        myGamePiece.speedX = -1;
+        myPlatform.speedX = -5;
     }
 
     function moveright() {
-        myGamePiece.speedX = 1;
+        myPlatform.speedX = 5;
+
     }
 
     function clearmove() {
-        myGamePiece.speedX = 0;
-        myGamePiece.speedY = 0;
+        myPlatform.speedX = 0;
+        myPlatform.speedY = 0;
     }
+
+    function pauseGame(){
+      isPaused=true;
+    }
+
 </script>
-<div style="text-align:center;width:480px;">
-    <button onmousedown="moveleft()" onmouseup="clearmove()" ontouchstart="moveleft()">LEFT</button>
-    <button onmousedown="moveright()" onmouseup="clearmove()" ontouchstart="moveright()">RIGHT</button><br><br>
-</div>
-<p>Now there is an obstacle in our gaming area, but still nothing happens when the red square hits it.</p>
+<br>
+<button onmousedown="moveleft()" onmouseup="clearmove()" ontouchstart="moveleft()">Lewo</button>
+<button onmousedown="moveright()" onmouseup="clearmove()" ontouchstart="moveright()">Prawo</button>
+<button onmousedown="startGame()" onmouseup="clearmove()" ontouchstart="startGame()">Start</button>
+<button onmousedown="pauseGame()" onmouseup="clearmove()" ontouchstart="pauseGame()">Stop</button>
+
 </body>
 </html>
