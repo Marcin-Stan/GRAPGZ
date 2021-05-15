@@ -43,15 +43,74 @@
     let myPlatform;
     let myBall;
     let interval;
+    var bricks=[];
     let isPaused=false;
     let isEnd= false;
+
+    function loadMap(){
+        bricks = [
+            new Brick(50,50,50,30,"blue"),
+            new Brick(101,50,50,30,"blue"),
+            new Brick(152,50,50,30,"blue"),
+            new Brick(203,50,50,30,"blue"),
+            new Brick(254,50,50,30,"blue"),
+            new Brick(305,50,50,30,"blue"),
+            new Brick(356,50,50,30,"blue"),
+            new Brick(407,50,50,30,"blue"),
+            new Brick(458,50,50,30,"blue"),
+            new Brick(509,50,50,30,"blue"),
+
+
+            new Brick(50,81,50,30,"green"),
+            new Brick(101,81,50,30,"green"),
+            new Brick(152,81,50,30,"green"),
+            new Brick(203,81,50,30,"green"),
+            new Brick(254,81,50,30,"green"),
+            new Brick(305,81,50,30,"green"),
+            new Brick(356,81,50,30,"green"),
+            new Brick(407,81,50,30,"green"),
+            new Brick(458,81,50,30,"green"),
+            new Brick(509,81,50,30,"green"),
+
+            new Brick(50,112,50,30,"darkcyan"),
+            new Brick(101,112,50,30,"darkcyan"),
+            new Brick(152,112,50,30,"darkcyan"),
+            new Brick(203,112,50,30,"darkcyan"),
+            new Brick(254,112,50,30,"darkcyan"),
+            new Brick(305,112,50,30,"darkcyan"),
+            new Brick(356,112,50,30,"darkcyan"),
+            new Brick(407,112,50,30,"darkcyan"),
+            new Brick(458,112,50,30,"darkcyan"),
+            new Brick(509,112,50,30,"darkcyan")
+        ];
+    }
+
+    function Brick(x,y,width,height,color){
+        var isAlive = true;
+        this.x = x;
+        this.y = y;
+        this.width = width;
+        this.height = height;
+        this.color = color;
+        this.update=function(){
+            if(isAlive===true) {
+                ctx = myGameArea.context;
+                ctx.fillStyle = this.color;
+                ctx.fillRect(this.x, this.y, this.width, this.height);
+            }
+        }
+
+    }
+
     function startGame() {
+
         if(isPaused===false||isEnd===true){
+            loadMap();
             isEnd = false;
             isPaused=false;
             clearInterval(interval);
             myPlatform = new component(150, 20, "blue", 200, 360);
-            myBall = new ball(10,"green",100,100);
+            myBall = new ball(10,"green",100,150);
             myGameArea.start();
         }else {
             isPaused=false;
@@ -131,14 +190,29 @@
                 clearInterval(interval);
             }
         }
-
+        this.checkBallColisionWithBrick=function(bricks){
+            bricks.forEach((brick) => {
+                    if((this.y<brick.y+brick.height)&&(this.y>brick.y)&&(this.x>brick.x)&&(this.x<brick.x+brick.width)){
+                        this.speedX=(-1)*this.speedX;
+                        brick.isAlive=false;
+                    }
+                    if((this.x<brick.x+brick.width)&&(this.x>brick.x)&&(this.y>brick.y)&&(this.y<brick.y+brick.height)) {
+                        this.speedY = (-1) * this.speedY;
+                        brick.isAlive = false;
+                    }
+            });
+        }
     }
 
     function updateGameArea() {
         if(isPaused===false){
             myGameArea.clear();
+            bricks.forEach((brick)=>{
+                brick.update();
+            });
             myBall.collisionBall();
             myBall.collisionPlatform(myPlatform.x,myPlatform.y,myPlatform.width);
+            myBall.checkBallColisionWithBrick(bricks);
             myBall.newPos();
             myBall.update();
             myPlatform.newPos();
