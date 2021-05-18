@@ -24,6 +24,12 @@
             case 39: // Right
                 moveright();
                 break;
+			case 40:
+				movedown();
+				break;
+			case 38:
+				moveup();
+				break;
 
         }
     }, false);
@@ -36,17 +42,25 @@
             case 39: // Right
                 clearmove();
                 break;
+			case 40:
+				clearmove2();
+				break;
+			case 38:
+				clearmove2();
+				break;
 
         }
     }, false);
 
     let myPlatform;
+	let myPlatform2;
     let myBall;
     let interval;
     var bricks=[];
     let isPaused=false;
     let isEnd= false;
     let points=0;
+	let isSidePlatform=false;
 
     function loadMap(){
         bricks = [
@@ -105,7 +119,8 @@
             isEnd = false;
             isPaused=false;
             clearInterval(interval);
-            myPlatform = new component(400, 20, "blue", 200, 360);
+            myPlatform = new component(150, 20, "blue", 200, 360);
+			myPlatform2= new component(20, 150, "blue", 10, 100);
             myBall = new ball(10,"green",100,170);
             myGameArea.start();
         }else {
@@ -171,7 +186,7 @@
             this.y += this.speedY;
         }
         this.collisionPlatform= function(x, y, width){
-            if((this.y===y-this.radious)&&((this.x<=x+width)&&(this.x>=x))){
+            if((this.y>=y-this.radious)&&((this.x<=x+width)&&(this.x>=x))){
                 this.speedY=(-1)*this.speedY;
                 platformPiece=myPlatform.width/10;
                 vector=this.speedX/Math.abs(this.speedX)
@@ -203,16 +218,51 @@
                 this.speedX=this.speedX*vector;
             }
         }
+		
+		this.collisionPlatform2= function(x, y, width,height){
+            if((this.x<=x-this.radious+width)&&((this.y<=y+height)&&(this.y>=y))){
+                this.speedX=(-1)*this.speedX;
+                platformPiece=myPlatform2.height/10;
+                vector=this.speedY/Math.abs(this.speedY)
+                switch(true){
+                    case this.x<x+platformPiece:
+                        this.speedY=this.startSpeed*3;
+                        break;
+                    case this.x<x+3*platformPiece:
+                        this.speedY=this.startSpeed*2;
+                        break;
+                    case this.x<x+4*platformPiece:
+                        this.speedY=this.startSpeed*1.5;
+                        break;
+                    case this.x<x+6*platformPiece:
+                        this.speedY=this.startSpeed;
+                        break;
+                    case this.x<x+7*platformPiece:
+                        this.speedY=this.startSpeed*1.5;
+                        break;
+                    case this.x<x+9*platformPiece:
+                        this.speedY=this.startSpeed*2;
+                        break;
+                    case this.x<x+width:
+                        this.speedY=this.startSpeed*3;
+                        break;
+                    default:
+                        this.speedY=this.speedY;
+                }
+                this.speedY=this.speedY*vector;
+            }
+        }
+		
         this.collisionBall = function() {
             if(this.y<=0){
                 this.speedY=(-1)*this.speedY;
             }
-            if((this.x>=600)||(this.x<=0)){
+            if((this.x>=600)||(!isSidePlatform&&(this.x<=0))){
                 this.speedX=(-1)*this.speedX;
             }
         }
         this.collisionDown=function(){
-            if(this.y>400){
+            if((this.y>400)||(this.x<-5)){
                 ctx.font = "40px Arial";
                 ctx.fillStyle="red";
                 ctx.fillText("Koniec gry", 250, 200);
@@ -270,14 +320,22 @@
             });
             myBall.collisionBall();
             myBall.collisionPlatform(myPlatform.x,myPlatform.y,myPlatform.width);
-            myBall.checkBallColisionWithBrick(bricks);
+			if(isSidePlatform){
+				myBall.collisionPlatform2(myPlatform2.x,myPlatform2.y,myPlatform2.width, myPlatform2.height);
+            }
+			myBall.checkBallColisionWithBrick(bricks);
             myBall.checkEndOfBricks(bricks);
             myBall.newPos();
             myBall.update();
+			
             checkPlatformEdgePadding();
             myPlatform.newPos();
             myPlatform.update();
-            myBall.collisionDown();
+			if(isSidePlatform){
+				myPlatform2.newPos();
+				myPlatform2.update();
+            }
+			myBall.collisionDown();
         }else {
             ctx.font = "40px Arial";
             ctx.fillStyle="red";
@@ -290,6 +348,9 @@
         if((myPlatform.x+myPlatform.width>=595&&(myPlatform.speedX>0))||(myPlatform.x<=5&&(myPlatform.speedX<0))){
             myPlatform.speedX=0;
         }
+		if((myPlatform2.y+myPlatform2.height>=395&&(myPlatform2.speedY>0))||(myPlatform2.y<=5&&(myPlatform2.speedY<0))){
+            myPlatform2.speedY=0;
+        }
     }
 
     function moveleft() {
@@ -301,15 +362,29 @@
         myPlatform.speedX = 5;
 
     }
+	function moveup(){
+	myPlatform2.speedY=-5;
+	}
+	function movedown(){
+	myPlatform2.speedY=5;
+	}
 
     function clearmove() {
         myPlatform.speedX = 0;
         myPlatform.speedY = 0;
     }
+	function clearmove2(){
+		myPlatform2.speedX=0;
+		myPlatform2.speedY=0;
+		}
 
     function pauseGame(){
         isPaused=true;
     }
+	function toogleSidePlatform(){
+		isSidePlatform=!isSidePlatform;
+		startGame();
+	}
 
 </script>
 <br>
@@ -317,6 +392,7 @@
 <button onmousedown="moveright()" onmouseup="clearmove()" ontouchstart="moveright()">Prawo</button>
 <button onmousedown="startGame()" onmouseup="clearmove()" ontouchstart="startGame()">Start</button>
 <button onmousedown="pauseGame()" onmouseup="clearmove()" ontouchstart="pauseGame()">Stop</button>
+<button onmousedown="toogleSidePlatform()" ontouchstart="pauseGame()">Switch side platform + Reset</button>
 
 </body>
 </html>
