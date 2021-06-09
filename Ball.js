@@ -12,15 +12,15 @@ class Ball{
     }
 
     update(){
-        const ctx = myGameArea.context;
-        ctx.fillStyle = this.color;
-        ctx.beginPath();
-        ctx.arc(this.x,this.y,this.radious,0,2*Math.PI);
-        ctx.fill();
+        this.ctx = myGameArea.context;
+        this.ctx.fillStyle = this.color;
+        this.ctx.beginPath();
+        this.ctx.arc(this.x,this.y,this.radious,0,2*Math.PI);
+        this.ctx.fill();
 
-        ctx.font = "25px Arial";
-        ctx.fillStyle="red";
-        ctx.fillText(points, 10, 35);
+        this.ctx.font = "25px Arial";
+        this.ctx.fillStyle="red";
+        this.ctx.fillText(points, 10, 35);
     }
 
     newPos(){
@@ -33,7 +33,7 @@ class Ball{
         let vector;
         if((this.y>=y-this.radious)&&((this.x<=x+width)&&(this.x>=x))){
             this.speedY=(-1)*this.speedY;
-            platformPiece=myPlatform.width/10;
+            platformPiece=width/10;
             vector=this.speedX/Math.abs(this.speedX)
             switch(true){
                 case this.x<x+platformPiece:
@@ -69,7 +69,7 @@ class Ball{
         let vector;
         if((this.x<=x-this.radious+width)&&((this.y<=y+height)&&(this.y>=y))){
             this.speedX=(-1)*this.speedX;
-            platformPiece=myPlatform2.height/10;
+            platformPiece=height/10;
             vector=this.speedY/Math.abs(this.speedY)
             switch(true){
                 case this.x<x+platformPiece:
@@ -111,12 +111,13 @@ class Ball{
 
     collisionDown(){
         if((this.y>400)||(this.x<-5)){
-            ctx.font = "40px Arial";
-            ctx.fillStyle="red";
-            ctx.fillText("Koniec gry", 250, 200);
-            isEnd = true;
+            this.ctx.font = "40px Arial";
+            this.ctx.fillStyle="red";
+            this.ctx.fillText("Koniec gry", 250, 200);
             clearInterval(interval);
             points=0;
+            this.startSpeed=1;
+            return true;
         }
     }
 
@@ -146,15 +147,14 @@ class Ball{
         }
     }
 
-
     checkEndOfBricks(bricks){
         if(bricks.length===0){
             ctx.font = "30px Arial";
             ctx.fillStyle="red";
             ctx.fillText("Koniec poziomu", 180, 200);
-            isEnd = true;
             clearInterval(interval);
             points=0;
+            return true;
         }
     }
 
