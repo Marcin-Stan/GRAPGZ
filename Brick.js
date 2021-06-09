@@ -1,6 +1,6 @@
 class Brick {
 
-    constructor(x,y,widt,height,color) {
+    constructor(x,y,width,height,color) {
         this.x = x;
         this.y = y;
         this.width = width;

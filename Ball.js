@@ -1,7 +1,7 @@
 class Ball{
 
-    constructor(radious, color, x, y) {
-        this.radious = radious;
+    constructor(radius, color, x, y) {
+        this.radious = radius;
         this.color = color;
         this.x = x;
         this.y = y;
