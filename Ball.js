@@ -5,27 +5,82 @@ class Ball{
         this.color = color;
         this.x = x;
         this.y = y;
-
         this.startSpeed=5;
         this.speedX = 5;
         this.speedY = 5;
+        this.historyX=[];
+        this.historyY=[];
+        this.historyBrick=[];
+        this.historyBrickSpecial=[];
     }
 
     update(){
+
         this.ctx = myGameArea.context;
         this.ctx.fillStyle = this.color;
         this.ctx.beginPath();
         this.ctx.arc(this.x,this.y,this.radious,0,2*Math.PI);
         this.ctx.fill();
-
         this.ctx.font = "25px Arial";
         this.ctx.fillStyle="red";
         this.ctx.fillText(points, 10, 35);
+        for(let i=0; i<this.historyX.length; i++){
+            this.ctx.fillStyle = this.color;
+            this.ctx.globalAlpha=1-((6+i)*0.1);
+            this.ctx.beginPath();
+            this.ctx.arc(this.historyX[i],this.historyY[i],this.radious,0,2*Math.PI);
+            this.ctx.fill();
+        }
+        this.ctx.globalAlpha=1;
+
     }
 
-    newPos(){
+    newPos(bricks,platform, platform2){
+        this.historyX.unshift(this.x);
+        this.historyY.unshift(this.y);
+        if(this.speedX>0){
+            for(let i =1;i<this.speedX;i++){
+                this.collisionBallX();
+
+                this.checkBallColisionWithBrick(bricks);
+                if(isSidePlatform){
+                    this.collisionPlatform2(platform2.x,platform2.y,platform2.width,platform2.height);
+                }
+
+            }
+        }else {
+            for(let i =-1;i>=this.speedX;i--){
+                this.collisionBallX();
+                this.checkBallColisionWithBrick(bricks);
+                if(isSidePlatform){
+                    this.collisionPlatform2(platform2.x,platform2.y,platform2.width,platform2.height);
+                }
+
+            }
+        }
+
+        if(this.speedY>0){
+            for(let j=1;j<this.speedY;j++){
+                this.collisionBallY();
+                this.collisionPlatform(platform.x,platform.y,platform.width);
+                this.checkEndOfBricks(bricks);
+
+            }
+        }else {
+            for(let j=-1;j>=this.speedY;j--){
+                this.collisionBallY();
+                this.collisionPlatform(platform.x,platform.y,platform.width);
+                this.checkEndOfBricks(bricks);
+
+            }
+        }
         this.x +=this.speedX;
         this.y += this.speedY;
+
+        if(this.historyX.length>10){
+            this.historyX.pop();
+            this.historyY.pop();
+        }
     }
 
     collisionPlatform(x,y,width){
@@ -58,7 +113,7 @@ class Ball{
                     this.speedX=this.startSpeed*3;
                     break;
                 default:
-                    this.speedX=this.speedY;
+                    this.speedX=this.speedX;
             }
             this.speedX=this.speedX*vector;
         }
@@ -96,21 +151,24 @@ class Ball{
                 default:
                     this.speedY=this.speedY;
             }
-            this.speedY=this.speedY*vector;
+            this.speedX=this.speedX*vector;
         }
     }
 
-    collisionBall(){
-        if(this.y<=0){
+    collisionBallY(){
+        if(this.y<=10){
             this.speedY=(-1)*this.speedY;
         }
-        if((this.x>=600)||(!isSidePlatform&&(this.x<=0))){
+    }
+
+    collisionBallX(){
+        if((this.x>=590)||(!isSidePlatform&&(this.x<=10))){
             this.speedX=(-1)*this.speedX;
         }
     }
 
-    collisionDown(){
-        if((this.y>400)||(this.x<-5)){
+    collisionDown(balls){
+        if(balls.length===1 && (this.y>400)||(this.x<-5) ){
             this.ctx.font = "40px Arial";
             this.ctx.fillStyle="red";
             this.ctx.fillText("Koniec gry", 250, 200);
@@ -118,8 +176,11 @@ class Ball{
             points=0;
             this.startSpeed=1;
             return true;
-        }
+        }else if((this.y>400)||(this.x<-5)){
+            return false;
+        }else return 20;
     }
+
 
     checkBallColisionWithBrick(bricks){
         for(let i=0; i<bricks.length; i++){
@@ -129,6 +190,10 @@ class Ball{
                 &&(this.x>=bricks[i].x)
                 &&(this.x<=bricks[i].x+bricks[i].width)){
 
+                if(bricks[i].special){
+                    this.historyBrickSpecial.push(bricks[i]);
+                }
+                this.historyBrick.push(bricks[i]);
                 bricks.splice(i,1);
                 this.speedY = (-1) * this.speedY;
                 points++;
@@ -139,6 +204,11 @@ class Ball{
                     &&(this.y<=bricks[i].y+bricks[i].height)
                     &&(this.y>=bricks[i].y)){
 
+                    if(bricks[i].special){
+                        this.historyBrickSpecial.push(bricks[i]);
+                    }
+
+                    this.historyBrick.push(bricks[i]);
                     bricks.splice(i,1);
                     this.speedX = (-1) * this.speedX;
                     points++;
@@ -147,11 +217,34 @@ class Ball{
         }
     }
 
+    getRandomInt(min, max) {
+        min = Math.ceil(min);
+        max = Math.floor(max);
+        return Math.floor(Math.random() * (max - min)) + min;
+    }
+
+    printNumberOfBricks(balls){
+        if(this.historyBrickSpecial.length>=3){
+            let ball = new Ball(10,"red",100,170);
+            this.historyBrickSpecial=[];
+            return balls.push(ball);
+        }
+    }
+    setRandomBrokenBlock(bricks){
+        if(this.historyBrick.length>5){
+            let number = this.getRandomInt(0,this.historyBrick.length-1);
+            bricks.push(this.historyBrick[number]);
+            this.historyBrick.splice(number,1);
+        }
+        return bricks;
+    }
+
+
     checkEndOfBricks(bricks){
         if(bricks.length===0){
-            ctx.font = "30px Arial";
-            ctx.fillStyle="red";
-            ctx.fillText("Koniec poziomu", 180, 200);
+            this.ctx.font = "30px Arial";
+            this.ctx.fillStyle="red";
+            this.ctx.fillText("Koniec poziomu", 180, 200);
             clearInterval(interval);
             points=0;
             return true;
