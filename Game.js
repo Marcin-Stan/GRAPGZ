@@ -6,21 +6,22 @@ isFirstMode=false;
 isSecondMode=false;
 isRunning=false;
 let points=0;
-let isSidePlatform;
+let isSidePlatform=false;
 let timer = 0;
 let btn1;
 let btn2;
 let btn3;
 let btn4;
 balls=[];
+
 var myGameArea = {
     canvas : document.createElement("canvas"),
     start : function() {
         isRunning = true;
         btn1 = undefined;
         btn2 = undefined;
-        this.canvas.width = 600;
-        this.canvas.height = 400;
+        this.canvas.width = 640;
+        this.canvas.height = 480;
         this.canvas.style= "text-align:center";
         this.context = this.canvas.getContext("2d");
         //this.document.body.insertBefore(this.canvas, this.document.body.childNodes[0]);
@@ -48,9 +49,9 @@ function startGame(){
         this.isEnd = false;
         this.isPaused=false;
         clearInterval(interval);
-        this.myPlatform = new Component(150, 20, "blue", 200, 360);
-        this.myPlatform2= new Component(20, 150, "blue", 10, 100);
-        this.myBall = new Ball(10,"green",100,170);
+        this.myPlatform = new Component(128, 23, "blue", 200, 430);
+        this.myPlatform2= new Component(23, 128, "blue", 10, 100);
+        this.myBall = new Ball(8,"green",100,170,isSidePlatform);
         balls.push(this.myBall);
         this.myGameArea.start();
     }else {
@@ -89,7 +90,6 @@ function startGameTest(){
 
 }
 
-
 function choosePaletMode(){
     btn1.remove();
     btn2.remove();
@@ -98,6 +98,7 @@ function choosePaletMode(){
     btn3.innerText = "Pozioma platforma";
     document.body.appendChild(btn3);
     btn3.addEventListener("click",function () {
+        isSidePlatform = false;
         startGame();
     });
 
@@ -105,7 +106,8 @@ function choosePaletMode(){
     btn4.innerText = "Pozioma i pionowa platforma";
     document.body.appendChild(btn4);
     btn4.addEventListener("click", function () {
-        toogleSidePlatform();
+        isSidePlatform = true;
+        startGame();
     })
 
 }
@@ -155,7 +157,7 @@ function  updateGameArea(){
         this.checkPlatformEdgePadding();
         this.myPlatform.newPos();
         this.myPlatform.update();
-        if(this.isSidePlatform){
+        if(isSidePlatform){
             this.myPlatform2.newPos();
             this.myPlatform2.update();
         }
@@ -171,7 +173,7 @@ function  updateGameArea(){
             }
             timer=0;
         }
-        this.myBall.printNumberOfBricks(new Ball(10,"red",100,170));
+        this.myBall.printNumberOfBricks(new Ball(10,"red",100,170,isSidePlatform));
 
     }else {
         ctx = myGameArea.context;
@@ -189,25 +191,25 @@ function addNewLineBrick(){
         brick.y+=31;
     });
     this.bricks.push(
-        new Brick(50,50,50,30,"blue"),
-        new Brick(101,50,50,30,"blue"),
-        new Brick(152,50,50,30,"blue"),
-        new Brick(203,50,50,30,"blue"),
-        new Brick(254,50,50,30,"blue"),
-        new Brick(305,50,50,30,"blue"),
-        new Brick(356,50,50,30,"blue"),
-        new Brick(407,50,50,30,"blue"),
-        new Brick(458,50,50,30,"blue"),
-        new Brick(509,50,50,30,"blue")
+        new Brick(70,50,50,20,"blue",true),
+        new Brick(121,50,50,20,"blue",true),
+        new Brick(172,50,50,20,"blue",true),
+        new Brick(223,50,50,20,"blue",true),
+        new Brick(274,50,50,20,"blue",true),
+        new Brick(325,50,50,20,"blue",true),
+        new Brick(376,50,50,20,"blue",true),
+        new Brick(427,50,50,20,"blue",true),
+        new Brick(478,50,50,20,"blue",true),
+        new Brick(529,50,50,20,"blue",true)
     );
 
 }
 
 function  checkPlatformEdgePadding(){
-    if((this.myPlatform.x+this.myPlatform.width>=595&&(this.myPlatform.speedX>0))||(this.myPlatform.x<=5&&(this.myPlatform.speedX<0))){
+    if((this.myPlatform.x+this.myPlatform.width>=635&&(this.myPlatform.speedX>0))||(this.myPlatform.x<=5&&(this.myPlatform.speedX<0))){
         this.myPlatform.speedX=0;
     }
-    if((this.myPlatform2.y+this.myPlatform2.height>=395&&(this.myPlatform2.speedY>0))||(this.myPlatform2.y<=5&&(this.myPlatform2.speedY<0))){
+    if((this.myPlatform2.y+this.myPlatform2.height>=475&&(this.myPlatform2.speedY>0))||(this.myPlatform2.y<=5&&(this.myPlatform2.speedY<0))){
         this.myPlatform2.speedY=0;
     }
 }
@@ -255,14 +257,6 @@ function  pauseGame(){
 
 
 }
-
-
-function  toogleSidePlatform(){
-    this.isSidePlatform=!this.isSidePlatform;
-    this.startGame();
-}
-
-
 
 
 window.addEventListener('keydown', function(event) {
