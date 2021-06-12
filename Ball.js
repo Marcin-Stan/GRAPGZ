@@ -1,6 +1,6 @@
 class Ball{
 
-    constructor(radius, color, x, y) {
+    constructor(radius, color, x, y, isSideMode) {
         this.radious = radius;
         this.color = color;
         this.x = x;
@@ -12,6 +12,7 @@ class Ball{
         this.historyY=[];
         this.historyBrick=[];
         this.historyBrickSpecial=[];
+        this.isSideMode = isSideMode;
     }
 
     update(){
@@ -43,7 +44,7 @@ class Ball{
                 this.collisionBallX();
 
                 this.checkBallColisionWithBrick(bricks);
-                if(isSidePlatform){
+                if(this.isSideMode){
                     this.collisionPlatform2(platform2.x,platform2.y,platform2.width,platform2.height);
                 }
 
@@ -52,7 +53,7 @@ class Ball{
             for(let i =-1;i>=this.speedX;i--){
                 this.collisionBallX();
                 this.checkBallColisionWithBrick(bricks);
-                if(isSidePlatform){
+                if(this.isSideMode){
                     this.collisionPlatform2(platform2.x,platform2.y,platform2.width,platform2.height);
                 }
 
@@ -162,13 +163,13 @@ class Ball{
     }
 
     collisionBallX(){
-        if((this.x>=590)||(!isSidePlatform&&(this.x<=10))){
+        if((this.x>=630)||(!this.isSideMode&&(this.x<=10))){
             this.speedX=(-1)*this.speedX;
         }
     }
 
     collisionDown(balls){
-        if(balls.length===1 && (this.y>400)||(this.x<-5) ){
+        if(balls.length===1 && (this.y>480)||(this.x<-5) ){
             this.ctx.font = "40px Arial";
             this.ctx.fillStyle="red";
             this.ctx.fillText("Koniec gry", 250, 200);
@@ -176,7 +177,7 @@ class Ball{
             points=0;
             this.startSpeed=1;
             return true;
-        }else if((this.y>400)||(this.x<-5)){
+        }else if((this.y>480)||(this.x<-5)){
             return false;
         }else return 20;
     }
@@ -225,7 +226,7 @@ class Ball{
 
     printNumberOfBricks(balls){
         if(this.historyBrickSpecial.length>=3){
-            let ball = new Ball(10,"red",100,170);
+            let ball = new Ball(8,"red",100,170);
             this.historyBrickSpecial=[];
             return balls.push(ball);
         }
