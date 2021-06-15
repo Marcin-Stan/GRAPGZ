@@ -13,6 +13,12 @@ let btn2;
 let btn3;
 let btn4;
 balls=[];
+powerUps=[];
+let numberOfBrokenBricks=0;
+let brickValue=1;
+let platformWidth=128;
+let switchControl=false;
+
 
 var myGameArea = {
     canvas : document.createElement("canvas"),
@@ -49,14 +55,15 @@ function startGame(){
         this.isEnd = false;
         this.isPaused=false;
         clearInterval(interval);
-        this.myPlatform = new Component(128, 23, "blue", 200, 430);
-        this.myPlatform2= new Component(23, 128, "blue", 10, 100);
+        this.myPlatform = new Component(platformWidth, 23,200, 430,"paletka.png");
+        this.myPlatform2= new Component(23, platformWidth, 10, 100,"paletkaV.png");
         this.myBall = new Ball(8,"green",100,170,isSidePlatform);
         balls.push(this.myBall);
         this.myGameArea.start();
     }else {
         this.isPaused=false;
     }
+
 }
 
 function startGameTest(){
@@ -113,11 +120,53 @@ function choosePaletMode(){
 }
 
 function  updateGameArea(){
+    let activePowerUps=[false,false,false,false,false];
+
     if(this.isPaused===false){
         this.myGameArea.clear();
         this.bricks.forEach((brick)=>{
             brick.update();
         });
+        powerUps.forEach((powerUp)=>{
+            powerUp.update(this.myPlatform);
+            if(powerUp.isActive){
+                activePowerUps[powerUp.type]=true;
+            }
+        });
+        if(activePowerUps[0]){
+
+            if(activePowerUps[1]){
+                brickValue=10;
+            }else{
+                brickValue=2;
+            }
+
+        }else{
+
+            if(activePowerUps[1]){
+                brickValue=5;
+            }else{
+                brickValue=1;
+            }
+        }
+
+        if(activePowerUps[2]){
+            if(!activePowerUps[3]){
+                this.myPlatform.width=150;
+            }
+        }else{
+            if(activePowerUps[3]){
+                this.myPlatform.width=95;
+            }else{
+                this.myPlatform.width=platformWidth;
+            }
+        }
+        if(activePowerUps[4]){
+            switchControl=true;
+        }else{
+            switchControl=false;
+        }
+
         /*
         this.balls.forEach((ball)=>{
             this.isEnd = ball.checkEndOfBricks(this.bricks);
@@ -135,11 +184,12 @@ function  updateGameArea(){
          */
 
         for(let i=0;i<this.balls.length;i++){
+
             this.isEnd = this.balls[i].checkEndOfBricks(this.bricks);
 
             this.balls[i].newPos(this.bricks,this.myPlatform,this.myPlatform2);
             this.balls[i].update();
-            this.balls[i].printNumberOfBricks(this.balls);
+            this.balls[i].printNumberOfBricks(this.balls,isSidePlatform);
 
             if(this.balls[i].collisionDown((balls))){
                 this.isEnd=true;
@@ -215,19 +265,34 @@ function  checkPlatformEdgePadding(){
 }
 
 function  moveleft() {
-    this.myPlatform.speedX = -5;
-
+    if(!switchControl){
+        this.myPlatform.speedX = -5;
+    }else{
+        this.myPlatform.speedX = 5;
+    }
 }
 
 function  moveright() {
-    this.myPlatform.speedX = 5;
+    if(switchControl){
+        this.myPlatform.speedX = -5;
+    }else{
+        this.myPlatform.speedX = 5;
+    }
 
 }
 function  moveUp(){
-    this.myPlatform2.speedY=-5;
+    if(switchControl){
+        this.myPlatform.speedY = -5;
+    }else{
+        this.myPlatform.speedY = 5;
+    }
 }
 function  moveDown(){
-    this.myPlatform2.speedY=5;
+    if(!switchControl){
+        this.myPlatform.speedY = -5;
+    }else{
+        this.myPlatform.speedY = 5;
+    }
 }
 
 function  clearmove() {

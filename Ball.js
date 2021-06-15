@@ -5,9 +5,9 @@ class Ball{
         this.color = color;
         this.x = x;
         this.y = y;
-        this.startSpeed=5;
-        this.speedX = 5;
-        this.speedY = 5;
+        this.startSpeed=3;
+        this.speedX = 3;
+        this.speedY = 3;
         this.historyX=[];
         this.historyY=[];
         this.historyBrick=[];
@@ -193,11 +193,17 @@ class Ball{
 
                 if(bricks[i].special){
                     this.historyBrickSpecial.push(bricks[i]);
+                }else{
+                    numberOfBrokenBricks++;
                 }
+
+                this.getNewPowerUp(bricks[i]);
+                this.historyBrick.push(bricks[i]);
+
                 this.historyBrick.push(bricks[i]);
                 bricks.splice(i,1);
                 this.speedY = (-1) * this.speedY;
-                points++;
+                points+=1*brickValue;
 
             }else{
                 if(((this.x-this.radious<=bricks[i].x+bricks[i].width)
@@ -207,15 +213,27 @@ class Ball{
 
                     if(bricks[i].special){
                         this.historyBrickSpecial.push(bricks[i]);
+                    }else{
+                        numberOfBrokenBricks++;
                     }
-
+                    this.getNewPowerUp(bricks[i]);
                     this.historyBrick.push(bricks[i]);
+
                     bricks.splice(i,1);
                     this.speedX = (-1) * this.speedX;
-                    points++;
+                    points+=1*brickValue;
                 }
             }
         }
+    }
+
+    getNewPowerUp(brick){
+       if(numberOfBrokenBricks>=2){
+           numberOfBrokenBricks=0;
+           console.log(brick);
+           var powerUp = new PowerUp(brick);
+           powerUps.push(powerUp);
+       }
     }
 
     getRandomInt(min, max) {
@@ -224,9 +242,9 @@ class Ball{
         return Math.floor(Math.random() * (max - min)) + min;
     }
 
-    printNumberOfBricks(balls){
+    printNumberOfBricks(balls, isSlidePlatform){
         if(this.historyBrickSpecial.length>=3){
-            let ball = new Ball(8,"red",100,170);
+            let ball = new Ball(8,"red",100,170,isSlidePlatform);
             this.historyBrickSpecial=[];
             return balls.push(ball);
         }
