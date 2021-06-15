@@ -1,0 +1,118 @@
+body{
+width: 100%;
+height: 960px;
+background-image: "pacmanback.png"
+}
+
+#rectangle{
+    width:1780px;
+    height:123px;
+    background:#DB712E;
+	margin: auto;
+}
+
+#firsttrapez{
+	margin: auto;
+	border-bottom: 52px solid #D98219;
+    border-left: 50px solid transparent;
+    border-right: 50px solid transparent;
+    height: 0;
+    width: 1480px;
+	transform: rotate(180deg);
+}
+
+#rectangleframe{
+	margin:auto;
+    width:1380px;
+    height:740px;
+    background:#EB9F17;
+}
+
+#toptrapez{
+	float:center;
+	margin: auto;
+	border-bottom: 50px solid #D98219;
+    border-left: 50px solid transparent;
+    border-right: 50px solid transparent;
+    height: 0;
+    width: 1280px;
+	transform: rotate(180deg);
+}
+
+#bottomtrapez{
+	float:center;
+	margin: auto;
+	border-bottom: 50px solid #D98219;
+    border-left: 50px solid transparent;
+    border-right: 50px solid transparent;
+    height: 0;
+    width: 1280px;
+}
+
+#display{
+    width:1280px;
+    height:640px;
+    background:black;
+	margin: auto;
+}
+
+#rectanglecenter{
+    width:1480px;
+    height:803px;
+    background:#DB712E;
+	margin: auto;
+}
+
+#rightsidetrapez{
+	float:left;
+	border-bottom: 50px solid #D98219;
+    border-left: 50px solid transparent;
+    border-right: 50px solid transparent;
+    width: 740px;
+	transform: rotate(270deg);
+	margin-left: 986px;
+    margin-top: -590px;
+}
+
+#lasttrapez{
+	margin: auto;
+	border-bottom: 109px solid #FBAD17;
+    border-left: 100px solid transparent;
+    border-right: 100px solid transparent;
+    height: 0;
+    width: 1480px;
+	position: relative
+}
+
+#joypad1{
+   position:absolute;
+   top:30%;
+   left:5%;
+   margin-top:-50px;
+   margin-left:-25px;
+}
+
+#joypad2{
+   position:absolute;
+   top:30%;
+   left:65%;
+   margin-top:-50px;
+   margin-left:-25px;
+}
+
+
+#panel1{
+   position:absolute;
+   top:40%;
+   left:15%;
+   margin-top:-17px;
+   margin-left:-25px;
+}
+
+#panel2{
+   position:absolute;
+   top:40%;
+   left:75%;
+   margin-top:-17px;
+   margin-left:-25px;
+}

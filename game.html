@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+ <link rel="stylesheet" href="styleresp.css">
+ <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+ <script type="text/javascript" src="Game.js"></script>
+ <script type="text/javascript" src="Ball.js"></script>
+ <script type="text/javascript" src="Brick.js"></script>
+ <script type="text/javascript" src="Component.js"></script>
+ <script type="text/javascript" src="PowerUp.js"></script>
+
+ <style>
+  canvas {
+   margin-top: 10px;
+   border:1px solid #d3d3d3;
+   align-self: center;
+  }
+  body{
+   text-align:center;
+  }
+ </style>
+</head>
+<body>
+<div id="console">
+<div id="rectangle">
+<img id="logo" src="arkanoid.png"></img>
+</div>
+<div id="firsttrapez"></div>
+
+<div id="rectanglecenter">
+<div id="rectangleframe">
+<div id="toptrapez">
+</div>
+<div id="display">
+ <div id="gameArea">
+ </div>
+</div>
+<div id="bottomtrapez"></div>
+</div>
+</div>
+<div id="lasttrapez">
+
+</div>
+</div>
+<input type = "button"  onclick = "startGameTest()" value = "Nowa gra">
+<input type = "button" id="pauseButton" onclick = "pauseGame()" value = "Stop">
+</body>
+</html>
