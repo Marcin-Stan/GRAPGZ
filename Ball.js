@@ -228,7 +228,7 @@ class Ball{
     }
 
     getNewPowerUp(brick){
-       if(numberOfBrokenBricks>=2){
+       if(numberOfBrokenBricks>=5){
            numberOfBrokenBricks=0;
            console.log(brick);
            var powerUp = new PowerUp(brick);

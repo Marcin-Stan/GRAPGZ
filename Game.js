@@ -46,6 +46,7 @@ var myGameArea = {
 function startGame(){
     btn3.remove();
     btn4.remove();
+    powerUps=[];
     this.balls=[];
     this.brick = new Brick();
     timer = 0;
