@@ -7,11 +7,13 @@ isSecondMode=false;
 isRunning=false;
 let points=0;
 let isSidePlatform=false;
+let isComputerMode = false;
 let timer = 0;
 let btn1;
 let btn2;
 let btn3;
 let btn4;
+let btn5;
 balls=[];
 powerUps=[];
 let numberOfBrokenBricks=0;
@@ -26,6 +28,7 @@ var myGameArea = {
         isRunning = true;
         btn1 = undefined;
         btn2 = undefined;
+        btn5 = undefined;
         this.canvas.width = 640;
         this.canvas.height = 480;
         this.canvas.style= "text-align:center";
@@ -44,8 +47,17 @@ var myGameArea = {
 
 
 function startGame(){
-    btn3.remove();
-    btn4.remove();
+    if(isFirstMode  || isSecondMode){
+        btn3.remove();
+        btn4.remove();
+        btn5.remove();
+    }
+    if(isComputerMode){
+        btn1.remove();
+        btn2.remove();
+        btn5.remove();
+    }
+
     powerUps=[];
     this.balls=[];
     this.brick = new Brick();
@@ -81,6 +93,7 @@ function startGameTest(){
         btn1.addEventListener("click",function () {
             isFirstMode = true;
             isSecondMode = false;
+            isComputerMode = false;
             choosePaletMode();
         });
     }
@@ -92,9 +105,25 @@ function startGameTest(){
         btn2.addEventListener("click",function () {
             isSecondMode = true;
             isFirstMode = false;
+            isComputerMode = false;
             choosePaletMode();
         });
     }
+
+    if(typeof btn5 === 'undefined') {
+        btn5 = document.createElement('button');
+        btn5.innerText = "Tryb: Komputer gra";
+        document.body.appendChild(btn5);
+
+        btn5.addEventListener("click",function () {
+            isSecondMode = false;
+            isFirstMode = false;
+            isSidePlatform=false;
+            isComputerMode = true;
+            startGame();
+        });
+    }
+
 
 }
 
@@ -186,12 +215,25 @@ function  updateGameArea(){
 
         for(let i=0;i<this.balls.length;i++){
 
+
             this.isEnd = this.balls[i].checkEndOfBricks(this.bricks);
 
             this.balls[i].newPos(this.bricks,this.myPlatform,this.myPlatform2);
             this.balls[i].update();
             this.balls[i].printNumberOfBricks(this.balls,isSidePlatform);
 
+            if(isComputerMode) {
+                if(this.myBall.x<this.myPlatform.x+0.4 * this.myPlatform.width){
+                    moveleft();
+                }
+                if(this.myBall.x>this.myPlatform.x+ this.myPlatform.width- 0.3*this.myPlatform.width){
+                    moveright();
+                }
+                if(this.myBall.x>this.myPlatform.x + 0.3 * this.myPlatform.width
+                    && this.myBall.x <= this.myPlatform.x + this.myPlatform.width - 0.3 * this.myPlatform.width){
+                    clearmove();
+                }
+            }
             if(this.balls[i].collisionDown((balls))){
                 this.isEnd=true;
             }else {
@@ -282,17 +324,21 @@ function  moveright() {
 
 }
 function  moveUp(){
-    if(switchControl){
-        this.myPlatform.speedY = -5;
-    }else{
-        this.myPlatform.speedY = 5;
+    if(!isComputerMode) {
+        if (switchControl) {
+            this.myPlatform.speedY = -5;
+        } else {
+            this.myPlatform.speedY = 5;
+        }
     }
 }
 function  moveDown(){
-    if(!switchControl){
-        this.myPlatform.speedY = -5;
-    }else{
-        this.myPlatform.speedY = 5;
+    if(!isComputerMode){
+        if(!switchControl){
+            this.myPlatform.speedY = -5;
+        }else{
+            this.myPlatform.speedY = 5;
+        }
     }
 }
 
@@ -320,45 +366,45 @@ function  pauseGame(){
         return 0;
     }
 
-
-
 }
 
+    window.addEventListener('keydown', function(event) {
+        switch (event.keyCode) {
+            case 37: // Left
+                moveleft();
+                break;
+            case 39: // Right
+                moveright();
+                break;
+            case 40:  //Up
+                moveDown();
+                break;
+            case 38:  //Down
+                moveUp();
+                break;
+        }
+    }, false);
 
-window.addEventListener('keydown', function(event) {
-    switch (event.keyCode) {
-        case 37: // Left
-            moveleft();
-            break;
-        case 39: // Right
-            moveright();
-            break;
-        case 40:  //Up
-            moveDown();
-            break;
-        case 38:  //Down
-            moveUp();
-            break;
-    }
-}, false);
+    window.addEventListener('keyup', function(event) {
+        switch (event.keyCode) {
+            case 37: // Left
+                clearmove();
+                break;
+            case 39: // Right
+                clearmove();
+                break;
+            case 40:
+                clearmove2();
+                break;
+            case 38:
+                clearmove2();
+                break;
 
-window.addEventListener('keyup', function(event) {
-    switch (event.keyCode) {
-        case 37: // Left
-            clearmove();
-            break;
-        case 39: // Right
-            clearmove();
-            break;
-        case 40:
-            clearmove2();
-            break;
-        case 38:
-            clearmove2();
-            break;
+        }
+    }, false);
 
-    }
-}, false);
+
+
 
 
 
